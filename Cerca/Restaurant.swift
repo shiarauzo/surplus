@@ -12,6 +12,7 @@ struct Pedido: Identifiable, Hashable {
     let dish: String
     let restaurantName: String
     let price: String
+    let when: String
 
     var id: String { number }
 }

@@ -9,19 +9,15 @@ struct MapPage: View {
 
     var body: some View {
         if places.isEmpty {
-            VStack(spacing: 6) {
-                Text("Nothing nearby")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(.white)
-                Text("No listings")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Theme.gray)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black)
-            .accessibilityElement(children: .combine)
-            .accessibilityIdentifier("empty")
-            .accessibilityLabel("Nothing nearby. No listings")
+            Text("No restaurants nearby")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black)
+                .accessibilityIdentifier("empty")
         } else {
             map
         }
@@ -64,18 +60,14 @@ struct MapPage: View {
         .accessibilityIdentifier("map")
         .overlay(alignment: .bottom) {
             Button(action: onFoods) {
-                Text("Foods")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 36)
-                    .background(Theme.blue, in: Capsule())
+                PageDots(current: 0, count: 3)
+                    .frame(width: 88, height: 36)
+                    .contentShape(Rectangle())
             }
-            .buttonStyle(PressedScale())
+            .buttonStyle(.plain)
             .accessibilityIdentifier("foods")
-            .padding(.horizontal, 16)
-            .padding(.bottom, 12)
+            .accessibilityLabel("Foods")
+            .padding(.bottom, 2)
         }
     }
 }

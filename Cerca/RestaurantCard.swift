@@ -9,37 +9,22 @@ struct FoodDeck: View {
     @State private var drag = CGSize.zero
     @State private var busy = false
 
-    private var reveal: CGFloat {
-        min(abs(drag.width) / 90, 1)
-    }
-
     var body: some View {
         ZStack {
-            if listings.count > 1 {
-                FoodCard(listing: listings[1], drag: .zero, showsGuides: false, behind: true, onPass: {}, onTake: {})
-                    .scaleEffect(0.96 + (0.04 * reveal))
-                    .offset(y: 22)
-                    .allowsHitTesting(false)
-            }
-
             if let top = listings.first {
-                ZStack {
-                    Color.clear
-                        .contentShape(Rectangle())
-                        .gesture(cardDrag(top))
-                    FoodCard(
-                        listing: top,
-                        drag: drag,
-                        onPass: { throwCard(top, passing: true) },
-                        onTake: { throwCard(top, passing: false) }
-                    )
-                }
-                .padding(.bottom, 26)
+                Color.clear
+                    .contentShape(Rectangle())
+                    .gesture(cardDrag(top))
+                FoodCard(
+                    listing: top,
+                    drag: drag,
+                    onPass: { throwCard(top, passing: true) },
+                    onTake: { throwCard(top, passing: false) }
+                )
                 .offset(drag)
                 .rotationEffect(.degrees(Double(drag.width / 22)))
             }
         }
-        .padding(8)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
     }
@@ -102,17 +87,20 @@ struct FoodCard: View {
     let listing: Listing
     let drag: CGSize
     var showsGuides = true
-    var behind = false
     let onPass: () -> Void
     let onTake: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("\(listing.minutes) min")
-                .font(.system(size: 13))
-                .foregroundStyle(Theme.gray)
-                .padding(.leading, 40)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: 4) {
+                Spacer(minLength: 0)
+                Image(systemName: "location.fill")
+                    .font(.system(size: 12))
+                Text("\(listing.minutes) min")
+                    .font(.system(size: 13))
+            }
+            .foregroundStyle(Theme.gray)
+            .padding(.trailing, 46)
 
             if !listing.photo.isEmpty {
                 Image(listing.photo)
@@ -121,43 +109,32 @@ struct FoodCard: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 64)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
 
+            VStack(alignment: .leading, spacing: 4) {
                 Text(listing.dish)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
-            } else {
-                Text(listing.dish)
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(.white)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
+                Text(listing.restaurantName)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Theme.gray)
+                    .lineLimit(1)
             }
-
-            Text(listing.restaurantName)
-                .font(.system(size: 13))
-                .foregroundStyle(Theme.gray)
-                .lineLimit(1)
-
-            Spacer(minLength: 0)
+            .padding(.top, 4)
 
             Text(Restaurant.price)
-                .font(.system(size: 15, weight: .bold))
+                .font(.system(size: 15, weight: .black))
                 .foregroundStyle(.white)
+                .padding(.top, 4)
+
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
         .padding(.top, 8)
-        .padding(.bottom, 64)
+        .padding(.bottom, 52)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(
-            Color(white: behind ? 0.22 : 0.1),
-            in: RoundedRectangle(cornerRadius: 20, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.white.opacity(behind ? 0.45 : 0.16), lineWidth: behind ? 2 : 1)
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(Color.black)
         .allowsHitTesting(false)
         .overlay(alignment: .bottom) {
             if showsGuides {
@@ -167,7 +144,8 @@ struct FoodCard: View {
     }
 
     private var guideRow: some View {
-        HStack {
+        VStack(spacing: 4) {
+            HStack(spacing: 9) {
                 guideButton(
                     symbol: "xmark",
                     color: Theme.pass,
@@ -176,18 +154,28 @@ struct FoodCard: View {
                     emphasized: drag.width < -24,
                     action: onPass
                 )
-                Spacer()
-                guideButton(
-                    symbol: "checkmark",
-                    color: Theme.take,
-                    label: "Take",
-                    identifier: "take",
-                    emphasized: drag.width > 24,
-                    action: onTake
-                )
+                Spacer(minLength: 0)
+                Button(action: onTake) {
+                    HStack(spacing: 3) {
+                        Image(systemName: "apple.logo")
+                        Text("Pay")
+                            .lineLimit(1)
+                    }
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.black)
+                    .frame(width: 118, height: 32)
+                    .background(Color.white, in: Capsule())
+                    .scaleEffect(drag.width > 24 ? 1.06 : 1)
+                }
+                .buttonStyle(PressedScale(resting: drag.width > 24 ? 1.06 : 1))
+                .accessibilityIdentifier("take")
+                .accessibilityLabel("Pay")
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 22)
+            PageDots(current: 1, count: 3)
+                .frame(maxWidth: .infinity)
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 10)
     }
 
     private func guideButton(

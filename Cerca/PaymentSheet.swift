@@ -19,21 +19,6 @@ struct PaymentSheet: View {
 
     private var sheetContent: some View {
         VStack(spacing: 6) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Visa")
-                    .font(.system(size: 12))
-                Text("4242")
-                    .font(.system(size: 18, weight: .bold))
-            }
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(12)
-            .frame(height: 68)
-            .background(
-                Color(red: 0.102, green: 0.145, blue: 0.275),
-                in: RoundedRectangle(cornerRadius: 12)
-            )
-
             Text(listing.dish)
                 .font(.system(size: 13))
                 .foregroundStyle(Theme.gray)
@@ -43,6 +28,9 @@ struct PaymentSheet: View {
                 .font(.system(size: 26, weight: .bold))
                 .foregroundStyle(.white)
 
+            cardStack
+                .padding(.top, 4)
+
             Spacer(minLength: 0)
 
             Text("Double click to pay")
@@ -50,10 +38,45 @@ struct PaymentSheet: View {
                 .foregroundStyle(.white)
                 .lineLimit(1)
         }
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.top, 28)
+        .padding(.bottom, 8)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
         .contentShape(Rectangle())
+    }
+
+    private var cardStack: some View {
+        ZStack(alignment: .bottom) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(0.2))
+                .frame(width: 84, height: 44)
+                .offset(y: -44)
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(red: 0.043, green: 0.141, blue: 0.878).opacity(0.6))
+                .frame(width: 104, height: 52)
+                .offset(y: -28)
+            RoundedRectangle(cornerRadius: 8)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(white: 0.91), Color(white: 0.08)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 140, height: 72)
+                .overlay(alignment: .topLeading) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Visa")
+                            .font(.system(size: 12, weight: .semibold))
+                        Text("4242")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(12)
+                }
+        }
+        .frame(height: 88)
     }
 
     private var dismissGesture: some Gesture {

@@ -36,7 +36,7 @@ final class CercaUITests: XCTestCase {
 
         let empty = app.staticTexts["deck-empty"]
         XCTAssertTrue(empty.waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertTrue(app.staticTexts["Nothing left"].exists)
+        XCTAssertTrue(app.staticTexts["No restaurants nearby"].exists)
         XCTAssertFalse(app.buttons["take"].exists)
         shot("deck-empty")
     }
@@ -84,8 +84,7 @@ final class CercaUITests: XCTestCase {
         pay.tap()
         XCTAssertTrue(sheet.waitForExistence(timeout: 3))
         sheet.tap()
-        XCTAssertTrue(app.staticTexts["120"].waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertTrue(labelIsOnScreen(app, "Pick it up"))
+        XCTAssertTrue(app.otherElements["boleta"].waitForExistence(timeout: 3), app.debugDescription)
         XCTAssertTrue(labelIsOnScreen(app, "Chicken and rice"))
         XCTAssertTrue(labelIsOnScreen(app, "S/ 8.50"))
         shot("boleta")
@@ -126,8 +125,7 @@ final class CercaUITests: XCTestCase {
         let empty = app.staticTexts["empty"]
         XCTAssertTrue(empty.waitForExistence(timeout: 6), app.debugDescription)
         shot("vacio")
-        XCTAssertTrue(app.staticTexts["Nothing nearby"].exists)
-        XCTAssertTrue(app.staticTexts["No listings"].exists)
+        XCTAssertTrue(app.staticTexts["No restaurants nearby"].exists)
         XCTAssertFalse(app.buttons["foods"].exists)
         XCTAssertFalse(app.buttons["take"].exists)
     }

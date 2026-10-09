@@ -33,7 +33,9 @@ struct PagerView: View {
                 }
             } else {
                 buyPager
-                mapButton
+                if screen == .deck, !listings.isEmpty {
+                    mapButton
+                }
             }
 
             if let paying {
@@ -57,7 +59,7 @@ struct PagerView: View {
                 LazyHStack(spacing: 0) {
                     Group {
                         if listings.isEmpty {
-                            EmptyDeck()
+                            EmptyDeck(onBack: { screen = .map })
                                 .transition(.opacity.combined(with: .scale(scale: 0.96)))
                         } else {
                             FoodDeck(listings: listings, onPass: pass, onTake: take)
@@ -115,7 +117,8 @@ struct PagerView: View {
                 number: String(120 + pedidos.count),
                 dish: paying.dish,
                 restaurantName: paying.restaurantName,
-                price: Restaurant.price
+                price: Restaurant.price,
+                when: Self.pickupClock()
             ),
             at: 0
         )
@@ -123,23 +126,44 @@ struct PagerView: View {
         self.paying = nil
         screen = .boletas
     }
+
+    private static func pickupClock() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "h:mm a"
+        formatter.amSymbol = "am"
+        formatter.pmSymbol = "pm"
+        return formatter.string(from: Date())
+    }
 }
 
 struct EmptyDeck: View {
+    var onBack: () -> Void
+
     var body: some View {
-        VStack(spacing: 6) {
-            Text("Nothing left")
+        VStack(spacing: 16) {
+            Text("No restaurants nearby")
                 .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(.white)
-            Text("No surplus")
-                .font(.system(size: 13))
-                .foregroundStyle(Theme.gray)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .accessibilityIdentifier("deck-empty")
+            Button(action: onBack) {
+                Text("Back")
+                    .font(.system(size: 14))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .frame(width: 118, height: 32)
+                    .overlay {
+                        Capsule().stroke(Color.white, lineWidth: 1)
+                    }
+            }
+            .buttonStyle(PressedScale())
+            .accessibilityIdentifier("back")
         }
+        .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier("deck-empty")
-        .accessibilityLabel("Nothing left. No surplus")
     }
 }
 
@@ -164,30 +188,62 @@ struct BoletaCard: View {
     let pedido: Pedido
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(pedido.number)
-                .font(.system(size: 13, weight: .bold))
+        VStack(spacing: 4) {
+            receipt
+                .padding(.top, 18)
+            Spacer(minLength: 0)
+            PageDots(current: 2, count: 3)
+        }
+        .padding(.horizontal, 18)
+        .padding(.top, 8)
+        .padding(.bottom, 10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("boleta")
+    }
+
+    private var receipt: some View {
+        VStack(alignment: .leading, spacing: 2) {
             Text(pedido.price)
-                .font(.system(size: 26, weight: .bold))
+                .font(.system(size: 26, weight: .black))
+                .padding(.bottom, 4)
             Text(pedido.dish)
-                .font(.system(size: 15, weight: .bold))
+                .font(.system(size: 16))
                 .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+            Text(pedido.when)
+                .font(.system(size: 16))
+                .lineLimit(1)
             Text(pedido.restaurantName)
                 .font(.system(size: 13))
-                .foregroundStyle(Color.black.opacity(0.55))
-            Spacer(minLength: 0)
-            Text("Pick it up")
-                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(Theme.link)
+                .underline()
                 .lineLimit(1)
         }
         .foregroundStyle(.black)
-        .padding(14)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
-        .padding(.horizontal, 16)
-        .padding(.vertical, 28)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
+        .padding(.horizontal, 14)
+        .padding(.top, 18)
+        .padding(.bottom, 22)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white, in: ReceiptShape())
+    }
+}
+
+struct ReceiptShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let tooth: CGFloat = 8
+        let count = 10
+        let step = rect.width / CGFloat(count)
+        path.move(to: .zero)
+        path.addLine(to: CGPoint(x: rect.width, y: 0))
+        path.addLine(to: CGPoint(x: rect.width, y: rect.height - tooth))
+        for index in stride(from: count, through: 0, by: -1) {
+            let x = CGFloat(index) * step
+            let y = index.isMultiple(of: 2) ? rect.height : rect.height - tooth
+            path.addLine(to: CGPoint(x: x, y: y))
+        }
+        path.closeSubpath()
+        return path
     }
 }
