@@ -1,9 +1,10 @@
 {
   "images": [
     {
-      "filename": "causa.png",
+      "filename": "AppIcon.png",
       "idiom": "universal",
-      "scale": "2x"
+      "platform": "watchos",
+      "size": "1024x1024"
     }
   ],
   "info": {
