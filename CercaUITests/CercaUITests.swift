@@ -9,6 +9,7 @@ final class CercaUITests: XCTestCase {
         let app = launch(["--hold-splash"])
 
         XCTAssertTrue(app.staticTexts["Surplus"].waitForExistence(timeout: 4), app.debugDescription)
+        shot("splash")
     }
 
     func testOnboardingReachesTheMap() {

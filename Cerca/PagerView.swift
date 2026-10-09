@@ -231,6 +231,8 @@ struct BoletaCard: View {
             Text(pedido.dish)
                 .font(.system(size: 16))
                 .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
             Text(pedido.when)
                 .font(.system(size: 16))
                 .lineLimit(1)
