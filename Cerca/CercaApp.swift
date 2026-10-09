@@ -22,6 +22,9 @@ struct RootView: View {
             }
         }
         .task {
+            if ProcessInfo.processInfo.arguments.contains("--hold-splash") {
+                return
+            }
             try? await Task.sleep(for: .milliseconds(1400))
             withAnimation(.easeOut(duration: 0.25)) {
                 showsSplash = false
@@ -41,7 +44,7 @@ struct SplashView: View {
                     .fill(Color.white)
                     .frame(width: 18, height: 18)
             }
-            Text("Cerca")
+            Text("Surplus")
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(.white)
         }
@@ -49,6 +52,6 @@ struct SplashView: View {
         .background(Color.black)
         .ignoresSafeArea()
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Cerca")
+        .accessibilityLabel("Surplus")
     }
 }

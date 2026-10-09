@@ -5,6 +5,14 @@ final class CercaUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testSplashSaysSurplus() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--hold-splash"]
+        app.launch()
+
+        XCTAssertTrue(app.staticTexts["Surplus"].waitForExistence(timeout: 4), app.debugDescription)
+    }
+
     func testWearerFlow() {
         let app = XCUIApplication()
         app.launch()
