@@ -34,9 +34,13 @@ These are the screens from the Apple Watch simulator.
   <img src="images/empty.png" width="184" alt="No restaurants nearby">
 </p>
 
+## See it
+
+Open [shiarauzo.github.io/surplus](https://shiarauzo.github.io/surplus) to step through the screens. Nothing to install.
+
 ## Run
 
-There is no website for the app. It runs on the Apple Watch simulator, from this repository.
+The app itself runs on the Apple Watch simulator, from this repository.
 
 You need a Mac with Xcode and the watchOS 26 simulator.
 
