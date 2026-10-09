@@ -6,114 +6,168 @@ final class CercaUITests: XCTestCase {
     }
 
     func testSplashSaysSurplus() {
-        let app = XCUIApplication()
-        app.launchArguments = ["--hold-splash"]
-        app.launch()
+        let app = launch(["--hold-splash"])
 
         XCTAssertTrue(app.staticTexts["Surplus"].waitForExistence(timeout: 4), app.debugDescription)
     }
 
-    func testCarouselListsEveryFood() {
+    func testOnboardingReachesTheMap() {
         let app = XCUIApplication()
+        app.launchArguments = ["--show-onboarding"]
         app.launch()
 
-        XCTAssertTrue(app.otherElements["mapa"].waitForExistence(timeout: 6), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["Food you already know."].waitForExistence(timeout: 4), app.debugDescription)
+        shot("onboarding")
+        app.buttons["next"].tap()
+        let start = app.buttons["start"]
+        XCTAssertTrue(start.waitForExistence(timeout: 3), app.debugDescription)
+        shot("onboarding-gesto")
+        start.tap()
+        XCTAssertTrue(waitUntilOnScreen(app.otherElements["map"]), app.debugDescription)
+    }
+
+    func testDeckEndsWhenNothingIsLeft() {
+        let app = launch()
+        openFoods(app)
+
+        for _ in 0..<20 {
+            app.swipeLeft()
+        }
+
+        let empty = app.staticTexts["deck-empty"]
+        XCTAssertTrue(empty.waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["No restaurants nearby"].exists)
+        XCTAssertFalse(app.buttons["take"].exists)
+        shot("deck-empty")
+    }
+
+    func testCarouselListsEveryFood() {
+        let app = launch()
+
+        XCTAssertTrue(waitForMap(app), app.debugDescription)
         XCTAssertEqual(
-            app.staticTexts.matching(NSPredicate(format: "label == %@", "La olla, 4 min")).count,
+            app.staticTexts.matching(NSPredicate(format: "label == %@", "The pot, 4 min")).count,
             1
         )
 
-        app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Arroz con pollo"].waitForExistence(timeout: 3), app.debugDescription)
+        openFoods(app)
+        XCTAssertTrue(app.buttons["pass"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["take"].exists)
+        shot("arroz")
 
         app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Ají de gallina"].waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertTrue(labelIsOnScreen(app, "La olla"))
+        XCTAssertTrue(app.staticTexts["Aji chicken"].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(labelIsOnScreen(app, "The pot"))
         shot("aji")
 
         app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Causa limeña"].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["Potato causa"].waitForExistence(timeout: 3), app.debugDescription)
+        shot("causa")
 
         app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Pan de yema"].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["Egg bread"].waitForExistence(timeout: 3), app.debugDescription)
         shot("pan")
     }
 
-    func testWearerFlow() {
-        let app = XCUIApplication()
-        app.launch()
+    func testPayOpensABoleta() {
+        let app = launch()
 
-        XCTAssertTrue(app.otherElements["mapa"].waitForExistence(timeout: 6), app.debugDescription)
-        shot("mapa")
-        XCTAssertTrue(app.staticTexts["La olla, 4 min"].exists)
-        XCTAssertTrue(app.staticTexts["Rosa, 10 min"].exists)
-        XCTAssertTrue(app.staticTexts["Don Pan, 14 min"].exists)
-
-        app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Arroz con pollo"].waitForExistence(timeout: 3), app.debugDescription)
-        shot("aviso")
-        let pay = visiblePayButton(app)
+        openFoods(app)
+        let check = visibleButton(app, "take")
+        XCTAssertTrue(check.waitForExistence(timeout: 3), app.debugDescription)
+        check.tap()
+        let pay = visibleButton(app, "pay")
         XCTAssertTrue(pay.waitForExistence(timeout: 3), app.debugDescription)
-
         pay.tap()
-        let sheet = app.buttons["hoja"]
+        let sheet = app.buttons["sheet"]
         XCTAssertTrue(sheet.waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertTrue(app.staticTexts["Doble clic para pagar"].exists)
-        shot("hoja")
-        XCTAssertTrue(app.staticTexts["S/ 8.50"].exists)
-
         app.swipeDown()
         XCTAssertTrue(pay.waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertFalse(app.staticTexts["Listo"].exists)
 
         pay.tap()
         XCTAssertTrue(sheet.waitForExistence(timeout: 3))
         sheet.tap()
-        XCTAssertTrue(app.staticTexts["Listo"].waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertTrue(onScreen(app.staticTexts["Arroz con pollo"]))
-        shot("listo")
-        XCTAssertFalse(hasPayButtonOnScreen(app))
+        XCTAssertTrue(app.otherElements["boleta"].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(labelIsOnScreen(app, "Chicken and rice"))
+        XCTAssertTrue(labelIsOnScreen(app, "S/ 8.50"))
+        shot("boleta")
 
+        app.buttons["back-deck"].tap()
+        XCTAssertTrue(app.staticTexts["Aji chicken"].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertFalse(labelIsOnScreen(app, "Chicken and rice"))
+    }
+
+    func testWearerFlow() {
+        let app = launch()
+
+        XCTAssertTrue(waitForMap(app), app.debugDescription)
+        shot("map")
+        XCTAssertTrue(app.staticTexts["The pot, 4 min"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["foods"].exists)
+
+        openFoods(app)
+        shot("aviso")
+        let check = visibleButton(app, "take")
+        XCTAssertTrue(check.waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertFalse(app.buttons["pay"].exists)
+
+        check.tap()
+        let pay = visibleButton(app, "pay")
+        XCTAssertTrue(pay.waitForExistence(timeout: 3), app.debugDescription)
+        shot("pay")
+
+        pay.tap()
+        let sheet = app.buttons["sheet"]
+        XCTAssertTrue(sheet.waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["Visa"].exists)
+        XCTAssertTrue(app.staticTexts["4242"].exists)
+        shot("hoja")
         app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Ají de gallina"].waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertTrue(hasPayButtonOnScreen(app))
-        XCTAssertFalse(onScreen(app.staticTexts["Listo"]))
+        XCTAssertTrue(app.staticTexts["Mastercard"].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["S/ 8.50"].exists)
 
-        app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Causa limeña"].waitForExistence(timeout: 3), app.debugDescription)
-        shot("causa")
-        XCTAssertTrue(onScreen(app.staticTexts["Menú Rosa"]))
-        XCTAssertTrue(hasPayButtonOnScreen(app))
-
-        app.swipeLeft()
-        XCTAssertTrue(app.staticTexts["Pan de yema"].waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertTrue(app.staticTexts["Don Pan"].exists)
-        XCTAssertTrue(visiblePayButton(app).exists)
-
-        app.swipeRight()
-        app.swipeRight()
-        app.swipeRight()
-        app.swipeRight()
-        XCTAssertTrue(app.otherElements["mapa"].waitForExistence(timeout: 3), app.debugDescription)
+        app.swipeDown()
+        XCTAssertTrue(pay.waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertFalse(app.staticTexts["120"].exists)
     }
 
     func testEmptyHasNothingToSwipe() {
-        let app = XCUIApplication()
-        app.launchArguments = ["--empty"]
-        app.launch()
+        let app = launch(["--empty"])
 
-        let empty = app.staticTexts["vacio"]
+        let empty = app.staticTexts["empty"]
         XCTAssertTrue(empty.waitForExistence(timeout: 6), app.debugDescription)
         shot("vacio")
-        XCTAssertTrue(app.staticTexts["Nada cerca"].exists)
-        XCTAssertTrue(app.staticTexts["Sin listados"].exists)
-        app.swipeLeft()
-        XCTAssertTrue(empty.waitForExistence(timeout: 2))
-        XCTAssertFalse(app.buttons["pagar"].exists)
+        XCTAssertTrue(app.staticTexts["No restaurants nearby"].exists)
+        XCTAssertFalse(app.buttons["foods"].exists)
+        XCTAssertFalse(app.buttons["take"].exists)
     }
 
-    private func visiblePayButton(_ app: XCUIApplication) -> XCUIElement {
-        let matches = app.buttons.matching(identifier: "pagar")
+    private func waitForMap(_ app: XCUIApplication) -> Bool {
+        let deadline = Date().addingTimeInterval(6)
+        while Date() < deadline {
+            if app.staticTexts["Surplus"].exists == false, onScreen(app.otherElements["map"]) {
+                return true
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+        return false
+    }
+
+    private func openFoods(_ app: XCUIApplication) {
+        XCTAssertTrue(waitForMap(app), app.debugDescription)
+        app.buttons["foods"].tap()
+        XCTAssertTrue(app.staticTexts["Chicken and rice"].waitForExistence(timeout: 3), app.debugDescription)
+    }
+
+    private func launch(_ arguments: [String] = []) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--skip-onboarding"] + arguments
+        app.launch()
+        return app
+    }
+
+    private func visibleButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let matches = app.buttons.matching(identifier: identifier)
         for index in 0..<matches.count {
             let button = matches.element(boundBy: index)
             if onScreen(button) {
@@ -124,7 +178,7 @@ final class CercaUITests: XCTestCase {
     }
 
     private func hasPayButtonOnScreen(_ app: XCUIApplication) -> Bool {
-        let matches = app.buttons.matching(identifier: "pagar")
+        let matches = app.buttons.matching(identifier: "take")
         for index in 0..<matches.count where onScreen(matches.element(boundBy: index)) {
             return true
         }
@@ -143,6 +197,15 @@ final class CercaUITests: XCTestCase {
         guard element.exists else { return false }
         let frame = element.frame
         return frame.minX >= -1 && frame.maxX <= 185 && frame.width > 1
+    }
+
+    private func waitUntilOnScreen(_ element: XCUIElement) -> Bool {
+        let deadline = Date().addingTimeInterval(6)
+        while Date() < deadline {
+            if onScreen(element) { return true }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+        return onScreen(element)
     }
 
     private func shot(_ name: String) {

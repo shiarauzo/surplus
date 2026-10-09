@@ -3,29 +3,28 @@ import SwiftUI
 
 struct MapPage: View {
     var places: [Restaurant]
+    var onFoods: () -> Void
+
+    @State private var position: MapCameraPosition = .region(Restaurant.region)
 
     var body: some View {
         if places.isEmpty {
-            VStack(spacing: 6) {
-                Text("Nada cerca")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(.white)
-                Text("Sin listados")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Theme.gray)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black)
-            .accessibilityElement(children: .combine)
-            .accessibilityIdentifier("vacio")
-            .accessibilityLabel("Nada cerca. Sin listados")
+            Text("No restaurants nearby")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black)
+                .accessibilityIdentifier("empty")
         } else {
             map
         }
     }
 
     private var map: some View {
-        Map(initialPosition: .region(Restaurant.region)) {
+        Map(position: $position) {
             Annotation("", coordinate: Restaurant.user) {
                 Circle()
                     .fill(Color.white)
@@ -56,18 +55,19 @@ struct MapPage: View {
                 }
             }
         }
-        .mapStyle(.standard(emphasis: .muted, pointsOfInterest: .excludingAll, showsTraffic: false))
+        .mapStyle(.standard(pointsOfInterest: .excludingAll, showsTraffic: false))
         .environment(\.colorScheme, .dark)
-        .allowsHitTesting(false)
+        .accessibilityIdentifier("map")
         .overlay(alignment: .bottom) {
-            LinearGradient(
-                colors: [.clear, .black.opacity(0.92)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 52)
-            .allowsHitTesting(false)
+            Button(action: onFoods) {
+                PageDots(current: 0, count: 3)
+                    .frame(width: 88, height: 36)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("foods")
+            .accessibilityLabel("Foods")
+            .padding(.bottom, 2)
         }
-        .accessibilityIdentifier("mapa")
     }
 }
