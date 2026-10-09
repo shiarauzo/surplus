@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PaymentSheet: View {
-    let place: Restaurant
+    let listing: Listing
     let onConfirm: () -> Void
     let onDismiss: () -> Void
 
@@ -34,7 +34,7 @@ struct PaymentSheet: View {
                 in: RoundedRectangle(cornerRadius: 12)
             )
 
-            Text(place.dish)
+            Text(listing.dish)
                 .font(.system(size: 13))
                 .foregroundStyle(Theme.gray)
                 .lineLimit(1)
