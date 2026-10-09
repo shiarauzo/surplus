@@ -1,18 +1,18 @@
 import SwiftUI
 
 struct RestaurantCard: View {
-    let place: Restaurant
+    let listing: Listing
     let isPaid: Bool
     let onPay: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("A \(place.minutes) min")
+            Text("A \(listing.minutes) min")
                 .font(.system(size: 13))
                 .foregroundStyle(Theme.gray)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            if place.showsPhoto {
+            if listing.showsPhoto {
                 Image("Causa")
                     .resizable()
                     .scaledToFill()
@@ -20,19 +20,19 @@ struct RestaurantCard: View {
                     .frame(height: 64)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
 
-                Text(place.dish)
+                Text(listing.dish)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
             } else {
-                Text(place.dish)
+                Text(listing.dish)
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            Text(place.name)
+            Text(listing.restaurantName)
                 .font(.system(size: 13))
                 .foregroundStyle(Theme.gray)
                 .lineLimit(1)

@@ -3,14 +3,18 @@ import SwiftUI
 struct PagerView: View {
     @State private var pageID: Int? = 0
     @State private var paidIDs: Set<String> = []
-    @State private var paying: Restaurant?
+    @State private var paying: Listing?
 
     private var places: [Restaurant] {
         Restaurant.visiblePlaces
     }
 
+    private var listings: [Listing] {
+        places.flatMap(\.listings)
+    }
+
     private var pageCount: Int {
-        places.isEmpty ? 1 : places.count + 1
+        listings.isEmpty ? 1 : listings.count + 1
     }
 
     var body: some View {
@@ -21,9 +25,9 @@ struct PagerView: View {
                         .id(0)
                         .containerRelativeFrame([.horizontal, .vertical])
 
-                    ForEach(Array(places.enumerated()), id: \.element.id) { offset, place in
-                        RestaurantCard(place: place, isPaid: paidIDs.contains(place.id)) {
-                            paying = place
+                    ForEach(Array(listings.enumerated()), id: \.element.id) { offset, listing in
+                        RestaurantCard(listing: listing, isPaid: paidIDs.contains(listing.id)) {
+                            paying = listing
                         }
                         .id(offset + 1)
                         .containerRelativeFrame([.horizontal, .vertical])
@@ -34,9 +38,9 @@ struct PagerView: View {
             .scrollTargetBehavior(.paging)
             .scrollPosition(id: $pageID)
             .scrollIndicators(.hidden)
-            .scrollDisabled(places.isEmpty || paying != nil)
+            .scrollDisabled(listings.isEmpty || paying != nil)
 
-            if !places.isEmpty, paying == nil {
+            if !listings.isEmpty, paying == nil {
                 PageDots(current: pageID ?? 0, count: pageCount)
                     .padding(.bottom, 8)
                     .allowsHitTesting(false)
@@ -44,7 +48,7 @@ struct PagerView: View {
 
             if let paying {
                 PaymentSheet(
-                    place: paying,
+                    listing: paying,
                     onConfirm: {
                         paidIDs.insert(paying.id)
                         self.paying = nil

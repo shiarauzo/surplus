@@ -13,6 +13,32 @@ final class CercaUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Surplus"].waitForExistence(timeout: 4), app.debugDescription)
     }
 
+    func testCarouselListsEveryFood() {
+        let app = XCUIApplication()
+        app.launch()
+
+        XCTAssertTrue(app.otherElements["mapa"].waitForExistence(timeout: 6), app.debugDescription)
+        XCTAssertEqual(
+            app.staticTexts.matching(NSPredicate(format: "label == %@", "La olla, 4 min")).count,
+            1
+        )
+
+        app.swipeLeft()
+        XCTAssertTrue(app.staticTexts["Arroz con pollo"].waitForExistence(timeout: 3), app.debugDescription)
+
+        app.swipeLeft()
+        XCTAssertTrue(app.staticTexts["Ají de gallina"].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(labelIsOnScreen(app, "La olla"))
+        shot("aji")
+
+        app.swipeLeft()
+        XCTAssertTrue(app.staticTexts["Causa limeña"].waitForExistence(timeout: 3), app.debugDescription)
+
+        app.swipeLeft()
+        XCTAssertTrue(app.staticTexts["Pan de yema"].waitForExistence(timeout: 3), app.debugDescription)
+        shot("pan")
+    }
+
     func testWearerFlow() {
         let app = XCUIApplication()
         app.launch()
@@ -49,17 +75,22 @@ final class CercaUITests: XCTestCase {
         XCTAssertFalse(hasPayButtonOnScreen(app))
 
         app.swipeLeft()
+        XCTAssertTrue(app.staticTexts["Ají de gallina"].waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertTrue(hasPayButtonOnScreen(app))
+        XCTAssertFalse(onScreen(app.staticTexts["Listo"]))
+
+        app.swipeLeft()
         XCTAssertTrue(app.staticTexts["Causa limeña"].waitForExistence(timeout: 3), app.debugDescription)
         shot("causa")
         XCTAssertTrue(onScreen(app.staticTexts["Menú Rosa"]))
         XCTAssertTrue(hasPayButtonOnScreen(app))
-        XCTAssertFalse(onScreen(app.staticTexts["Listo"]))
 
         app.swipeLeft()
         XCTAssertTrue(app.staticTexts["Pan de yema"].waitForExistence(timeout: 3), app.debugDescription)
         XCTAssertTrue(app.staticTexts["Don Pan"].exists)
         XCTAssertTrue(visiblePayButton(app).exists)
 
+        app.swipeRight()
         app.swipeRight()
         app.swipeRight()
         app.swipeRight()
@@ -94,6 +125,14 @@ final class CercaUITests: XCTestCase {
 
     private func hasPayButtonOnScreen(_ app: XCUIApplication) -> Bool {
         let matches = app.buttons.matching(identifier: "pagar")
+        for index in 0..<matches.count where onScreen(matches.element(boundBy: index)) {
+            return true
+        }
+        return false
+    }
+
+    private func labelIsOnScreen(_ app: XCUIApplication, _ label: String) -> Bool {
+        let matches = app.staticTexts.matching(NSPredicate(format: "label == %@", label))
         for index in 0..<matches.count where onScreen(matches.element(boundBy: index)) {
             return true
         }
