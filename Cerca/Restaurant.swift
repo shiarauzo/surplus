@@ -21,6 +21,13 @@ struct Restaurant: Identifiable, Hashable {
 
     static let price = "S/ 8.50"
 
+    static var visiblePlaces: [Restaurant] {
+        if ProcessInfo.processInfo.arguments.contains("--empty") {
+            return []
+        }
+        return places
+    }
+
     static let user = CLLocationCoordinate2D(latitude: -12.1218, longitude: -77.0299)
 
     static let places: [Restaurant] = [

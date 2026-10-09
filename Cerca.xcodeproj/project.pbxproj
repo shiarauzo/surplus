@@ -14,6 +14,8 @@
 		A1000005 /* Restaurant.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000005 /* Restaurant.swift */; };
 		A1000006 /* PageDots.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000006 /* PageDots.swift */; };
 		A1000007 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007 /* Theme.swift */; };
+		A1000009 /* PaymentSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010 /* PaymentSheet.swift */; };
+		A1000011 /* CercaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000013 /* CercaUITests.swift */; };
 		A1000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000008 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -26,11 +28,21 @@
 		A2000006 /* PageDots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageDots.swift; sourceTree = "<group>"; };
 		A2000007 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A2000008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A2000010 /* PaymentSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentSheet.swift; sourceTree = "<group>"; };
+		A2000012 /* CercaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CercaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000013 /* CercaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CercaUITests.swift; sourceTree = "<group>"; };
 		A2000009 /* Cerca.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cerca.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A3000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A3000002 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -44,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				A4000002 /* Cerca */,
+				A4000004 /* CercaUITests */,
 				A4000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -58,15 +71,25 @@
 				A2000005 /* Restaurant.swift */,
 				A2000006 /* PageDots.swift */,
 				A2000007 /* Theme.swift */,
+				A2000010 /* PaymentSheet.swift */,
 				A2000008 /* Assets.xcassets */,
 			);
 			path = Cerca;
+			sourceTree = "<group>";
+		};
+		A4000004 /* CercaUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A2000013 /* CercaUITests.swift */,
+			);
+			path = CercaUITests;
 			sourceTree = "<group>";
 		};
 		A4000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				A2000009 /* Cerca.app */,
+				A2000012 /* CercaUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -91,7 +114,42 @@
 			productReference = A2000009 /* Cerca.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A5000002 /* CercaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A8000003 /* Build configuration list for PBXNativeTarget "CercaUITests" */;
+			buildPhases = (
+				A6000002 /* Sources */,
+				A3000002 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A5100001 /* PBXTargetDependency */,
+			);
+			name = CercaUITests;
+			productName = CercaUITests;
+			productReference = A2000012 /* CercaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		A5200001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A9000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A5000001;
+			remoteInfo = Cerca;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		A5100001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A5000001 /* Cerca */;
+			targetProxy = A5200001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXProject section */
 		A9000001 /* Project object */ = {
@@ -120,6 +178,7 @@
 			projectRoot = "";
 			targets = (
 				A5000001 /* Cerca */,
+				A5000002 /* CercaUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -147,6 +206,15 @@
 				A1000005 /* Restaurant.swift in Sources */,
 				A1000006 /* PageDots.swift in Sources */,
 				A1000007 /* Theme.swift in Sources */,
+				A1000009 /* PaymentSheet.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000011 /* CercaUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,7 +262,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Cerca;
 				INFOPLIST_KEY_WKApplication = YES;
-				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				INFOPLIST_KEY_WKWatchOnly = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = design.shiara.cerca;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -218,7 +286,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Cerca;
 				INFOPLIST_KEY_WKApplication = YES;
-				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				INFOPLIST_KEY_WKWatchOnly = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = design.shiara.cerca;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -227,6 +295,38 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		AA000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = design.shiara.cerca.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = Cerca;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		AA000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = design.shiara.cerca.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = Cerca;
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
@@ -248,6 +348,15 @@
 			buildConfigurations = (
 				AA000003 /* Debug */,
 				AA000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A8000003 /* Build configuration list for PBXNativeTarget "CercaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA000005 /* Debug */,
+				AA000006 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

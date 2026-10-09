@@ -2,9 +2,31 @@ import MapKit
 import SwiftUI
 
 struct MapPage: View {
+    var places: [Restaurant]
+
     var body: some View {
+        if places.isEmpty {
+            VStack(spacing: 6) {
+                Text("Nada cerca")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(.white)
+                Text("Sin listados")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Theme.gray)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("vacio")
+            .accessibilityLabel("Nada cerca. Sin listados")
+        } else {
+            map
+        }
+    }
+
+    private var map: some View {
         Map(initialPosition: .region(Restaurant.region)) {
-            Annotation("Tu ubicación", coordinate: Restaurant.user) {
+            Annotation("", coordinate: Restaurant.user) {
                 Circle()
                     .fill(Color.white)
                     .frame(width: 12, height: 12)
@@ -13,8 +35,8 @@ struct MapPage: View {
                     }
             }
 
-            ForEach(Restaurant.places) { place in
-                Annotation(place.mapLabel, coordinate: place.coordinate) {
+            ForEach(places) { place in
+                Annotation("", coordinate: place.coordinate) {
                     HStack(spacing: 4) {
                         Circle()
                             .fill(Theme.pin)
@@ -46,5 +68,6 @@ struct MapPage: View {
             .frame(height: 52)
             .allowsHitTesting(false)
         }
+        .accessibilityIdentifier("mapa")
     }
 }
