@@ -12,6 +12,6 @@ struct PageDots: View {
                     .frame(width: index == current ? 14 : 6, height: 6)
             }
         }
-        .accessibilityLabel("Página \(current + 1) de \(count)")
+        .accessibilityLabel("Page \(current + 1) of \(count)")
     }
 }

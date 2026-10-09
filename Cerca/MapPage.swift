@@ -3,29 +3,32 @@ import SwiftUI
 
 struct MapPage: View {
     var places: [Restaurant]
+    var onFoods: () -> Void
+
+    @State private var position: MapCameraPosition = .region(Restaurant.region)
 
     var body: some View {
         if places.isEmpty {
             VStack(spacing: 6) {
-                Text("Nada cerca")
+                Text("Nothing nearby")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(.white)
-                Text("Sin listados")
+                Text("No listings")
                     .font(.system(size: 13))
                     .foregroundStyle(Theme.gray)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .accessibilityElement(children: .combine)
-            .accessibilityIdentifier("vacio")
-            .accessibilityLabel("Nada cerca. Sin listados")
+            .accessibilityIdentifier("empty")
+            .accessibilityLabel("Nothing nearby. No listings")
         } else {
             map
         }
     }
 
     private var map: some View {
-        Map(initialPosition: .region(Restaurant.region)) {
+        Map(position: $position) {
             Annotation("", coordinate: Restaurant.user) {
                 Circle()
                     .fill(Color.white)
@@ -56,18 +59,23 @@ struct MapPage: View {
                 }
             }
         }
-        .mapStyle(.standard(emphasis: .muted, pointsOfInterest: .excludingAll, showsTraffic: false))
+        .mapStyle(.standard(pointsOfInterest: .excludingAll, showsTraffic: false))
         .environment(\.colorScheme, .dark)
-        .allowsHitTesting(false)
+        .accessibilityIdentifier("map")
         .overlay(alignment: .bottom) {
-            LinearGradient(
-                colors: [.clear, .black.opacity(0.92)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 52)
-            .allowsHitTesting(false)
+            Button(action: onFoods) {
+                Text("Foods")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 36)
+                    .background(Theme.blue, in: Capsule())
+            }
+            .buttonStyle(PressedScale())
+            .accessibilityIdentifier("foods")
+            .padding(.horizontal, 16)
+            .padding(.bottom, 12)
         }
-        .accessibilityIdentifier("mapa")
     }
 }

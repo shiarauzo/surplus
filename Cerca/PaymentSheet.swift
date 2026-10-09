@@ -13,8 +13,8 @@ struct PaymentSheet: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
         .highPriorityGesture(dismissGesture)
-        .accessibilityIdentifier("hoja")
-        .accessibilityLabel("Doble clic para pagar")
+        .accessibilityIdentifier("sheet")
+        .accessibilityLabel("Double click to pay")
     }
 
     private var sheetContent: some View {
@@ -45,7 +45,7 @@ struct PaymentSheet: View {
 
             Spacer(minLength: 0)
 
-            Text("Doble clic para pagar")
+            Text("Double click to pay")
                 .font(.system(size: 12))
                 .foregroundStyle(.white)
                 .lineLimit(1)
