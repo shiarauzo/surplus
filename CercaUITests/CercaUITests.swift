@@ -73,7 +73,10 @@ final class CercaUITests: XCTestCase {
         let app = launch()
 
         openFoods(app)
-        let pay = visiblePayButton(app)
+        let check = visibleButton(app, "take")
+        XCTAssertTrue(check.waitForExistence(timeout: 3), app.debugDescription)
+        check.tap()
+        let pay = visibleButton(app, "pay")
         XCTAssertTrue(pay.waitForExistence(timeout: 3), app.debugDescription)
         pay.tap()
         let sheet = app.buttons["sheet"]
@@ -89,7 +92,7 @@ final class CercaUITests: XCTestCase {
         XCTAssertTrue(labelIsOnScreen(app, "S/ 8.50"))
         shot("boleta")
 
-        app.swipeRight()
+        app.buttons["back-deck"].tap()
         XCTAssertTrue(app.staticTexts["Aji chicken"].waitForExistence(timeout: 3), app.debugDescription)
         XCTAssertFalse(labelIsOnScreen(app, "Chicken and rice"))
     }
@@ -104,14 +107,23 @@ final class CercaUITests: XCTestCase {
 
         openFoods(app)
         shot("aviso")
-        let pay = visiblePayButton(app)
+        let check = visibleButton(app, "take")
+        XCTAssertTrue(check.waitForExistence(timeout: 3), app.debugDescription)
+        XCTAssertFalse(app.buttons["pay"].exists)
+
+        check.tap()
+        let pay = visibleButton(app, "pay")
         XCTAssertTrue(pay.waitForExistence(timeout: 3), app.debugDescription)
+        shot("pay")
 
         pay.tap()
         let sheet = app.buttons["sheet"]
         XCTAssertTrue(sheet.waitForExistence(timeout: 3), app.debugDescription)
-        XCTAssertTrue(app.staticTexts["Double click to pay"].exists)
+        XCTAssertTrue(app.staticTexts["Visa"].exists)
+        XCTAssertTrue(app.staticTexts["4242"].exists)
         shot("hoja")
+        app.swipeLeft()
+        XCTAssertTrue(app.staticTexts["Mastercard"].waitForExistence(timeout: 3), app.debugDescription)
         XCTAssertTrue(app.staticTexts["S/ 8.50"].exists)
 
         app.swipeDown()
@@ -154,8 +166,8 @@ final class CercaUITests: XCTestCase {
         return app
     }
 
-    private func visiblePayButton(_ app: XCUIApplication) -> XCUIElement {
-        let matches = app.buttons.matching(identifier: "take")
+    private func visibleButton(_ app: XCUIApplication, _ identifier: String) -> XCUIElement {
+        let matches = app.buttons.matching(identifier: identifier)
         for index in 0..<matches.count {
             let button = matches.element(boundBy: index)
             if onScreen(button) {

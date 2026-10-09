@@ -8,6 +8,7 @@ struct FoodDeck: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var drag = CGSize.zero
     @State private var busy = false
+    @State private var armedID: String?
 
     var body: some View {
         ZStack {
@@ -18,8 +19,10 @@ struct FoodDeck: View {
                 FoodCard(
                     listing: top,
                     drag: drag,
-                    onPass: { throwCard(top, passing: true) },
-                    onTake: { throwCard(top, passing: false) }
+                    showsPay: armedID == top.id,
+                    onPass: { throwCard(top) },
+                    onCheck: { arm(top) },
+                    onPay: { onTake(top) }
                 )
                 .offset(drag)
                 .rotationEffect(.degrees(Double(drag.width / 22)))
@@ -40,9 +43,9 @@ struct FoodDeck: View {
                 let x = value.translation.width
                 let predicted = value.predictedEndTranslation.width
                 if x > 28 || predicted > 70 {
-                    throwCard(listing, passing: false, lift: value.translation.height)
+                    choose(listing)
                 } else if x < -28 || predicted < -70 {
-                    throwCard(listing, passing: true, lift: value.translation.height)
+                    throwCard(listing, lift: value.translation.height)
                 } else {
                     withAnimation(.spring(duration: 0.2, bounce: 0.12)) {
                         drag = .zero
@@ -51,20 +54,32 @@ struct FoodDeck: View {
             }
     }
 
-    private func throwCard(_ listing: Listing, passing: Bool, lift: CGFloat = 0) {
+    private func choose(_ listing: Listing) {
+        if armedID == listing.id {
+            onTake(listing)
+        } else {
+            arm(listing)
+        }
+        withAnimation(.spring(duration: 0.2, bounce: 0.12)) {
+            drag = .zero
+        }
+    }
+
+    private func arm(_ listing: Listing) {
+        withAnimation(.easeOut(duration: 0.2)) {
+            armedID = listing.id
+        }
+    }
+
+    private func throwCard(_ listing: Listing, lift: CGFloat = 0) {
         guard !busy else { return }
         if reduceMotion {
-            if passing {
-                onPass(listing)
-            } else {
-                onTake(listing)
-            }
+            onPass(listing)
             return
         }
         busy = true
-        let width: CGFloat = passing ? -420 : 420
         withAnimation(.easeOut(duration: 0.18)) {
-            drag = CGSize(width: width, height: lift * 0.35)
+            drag = CGSize(width: -420, height: lift * 0.35)
         }
         Task {
             try? await Task.sleep(for: .milliseconds(180))
@@ -73,12 +88,11 @@ struct FoodDeck: View {
             withTransaction(transaction) {
                 drag = .zero
                 busy = false
+                if armedID == listing.id {
+                    armedID = nil
+                }
             }
-            if passing {
-                onPass(listing)
-            } else {
-                onTake(listing)
-            }
+            onPass(listing)
         }
     }
 }
@@ -87,8 +101,10 @@ struct FoodCard: View {
     let listing: Listing
     let drag: CGSize
     var showsGuides = true
+    var showsPay = false
     let onPass: () -> Void
-    let onTake: () -> Void
+    let onCheck: () -> Void
+    let onPay: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -155,22 +171,34 @@ struct FoodCard: View {
                     action: onPass
                 )
                 Spacer(minLength: 0)
-                Button(action: onTake) {
-                    HStack(spacing: 3) {
-                        Image(systemName: "apple.logo")
-                        Text("Pay")
-                            .lineLimit(1)
+                if showsPay {
+                    Button(action: onPay) {
+                        HStack(spacing: 3) {
+                            Image(systemName: "apple.logo")
+                            Text("Pay")
+                                .lineLimit(1)
+                        }
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.black)
+                        .frame(width: 118, height: 32)
+                        .background(Color.white, in: Capsule())
                     }
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.black)
-                    .frame(width: 118, height: 32)
-                    .background(Color.white, in: Capsule())
-                    .scaleEffect(drag.width > 24 ? 1.06 : 1)
+                    .buttonStyle(PressedScale())
+                    .accessibilityIdentifier("pay")
+                    .accessibilityLabel("Pay")
+                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                } else {
+                    guideButton(
+                        symbol: "checkmark",
+                        color: Theme.take,
+                        label: "Take",
+                        identifier: "take",
+                        emphasized: drag.width > 24,
+                        action: onCheck
+                    )
                 }
-                .buttonStyle(PressedScale(resting: drag.width > 24 ? 1.06 : 1))
-                .accessibilityIdentifier("take")
-                .accessibilityLabel("Pay")
             }
+            .animation(.easeOut(duration: 0.2), value: showsPay)
             PageDots(current: 1, count: 3)
                 .frame(maxWidth: .infinity)
         }

@@ -36,6 +36,9 @@ struct PagerView: View {
                 if screen == .deck, !listings.isEmpty {
                     mapButton
                 }
+                if screen == .boletas {
+                    foodsButton
+                }
             }
 
             if let paying {
@@ -98,6 +101,23 @@ struct PagerView: View {
         .buttonStyle(PressedScale())
         .accessibilityIdentifier("back-map")
         .accessibilityLabel("Map")
+        .padding(.leading, 12)
+        .padding(.top, 6)
+    }
+
+    private var foodsButton: some View {
+        Button {
+            screen = .deck
+        } label: {
+            Image(systemName: "square.stack")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 32, height: 32)
+                .background(Color.white.opacity(0.16), in: Circle())
+        }
+        .buttonStyle(PressedScale())
+        .accessibilityIdentifier("back-deck")
+        .accessibilityLabel("Foods")
         .padding(.leading, 12)
         .padding(.top, 6)
     }
@@ -195,7 +215,7 @@ struct BoletaCard: View {
             PageDots(current: 2, count: 3)
         }
         .padding(.horizontal, 18)
-        .padding(.top, 8)
+        .padding(.top, 40)
         .padding(.bottom, 10)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
